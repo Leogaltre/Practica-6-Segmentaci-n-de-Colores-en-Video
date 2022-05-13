@@ -1,0 +1,87 @@
+# Programa completo Error
+import cv2
+import numpy as np
+
+# cap = cv2.VideoCapture('Practica.mp4')
+# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
+
+# Convertir la imagen RGB a HSV, que es HSV?? -----------------------------
+visualiza_un_HSV = np.uint8([[[0, 0, 255]]]) #[[[200, 0, 0]]]
+azulbajo = np.array(cv2.cvtColor(visualiza_un_HSV, cv2.COLOR_BGR2HSV))
+print(visualiza_un_HSV)
+print(azulbajo)
+# HSV -> [0 - 179, 0 - 255, 0 - 255]
+# HSV -> [Hue, Saturation, Value]
+# HSV -> [Matiz, Saturación, Valor]
+
+# Definir intervalo del color para el Azul en HSV
+azulbajo = np.array([100, 50, 50])  #[200,0,0] - 110
+azulalto = np.array([130, 255, 255])  #[255,0,0] - 120
+
+# Definir intervalo del color para el Verde en HSV
+verdebajo = np.array([40, 50, 50]) #[0,175,0] - 50
+verdealto = np.array([80, 255, 255]) #[0,255,0] - 80
+
+# Definir intervalo del color para el Rojo en HSV
+rojobajo1 = np.array([0, 50, 50])    #[0,0,255] - 0
+rojoalto1 = np.array([20, 255, 255])    #[0,0,150] - 10
+
+rojobajo2 = np.array([165, 50, 50])    #[0,0,255] - 0
+rojoalto2 = np.array([179, 255, 255])    #[0,0,150] - 10
+
+rojobajo = cv2.add(rojobajo1, rojobajo2)
+rojoalto = cv2.add(rojoalto1, rojoalto2)
+
+# Definir intervalo del color para el Blanco en HSV
+blancobajo = np.array([0, 0, 150])    #[200,200,200]
+blancoalto = np.array([0, 0, 255])    #[255,255,255]
+
+while True:
+    ret, CapturaV = cap.read()
+    if ret == True:
+        # hsv = cv2.cvtColor(cap, cv2.COLOR_BGR2HSV)
+        CapturaV_HSV = cv2.cvtColor(CapturaV, cv2.COLOR_BGR2HSV)
+
+        # Umbralizar la imagen HSV para obtener solo los rango de colores
+        mask1 = cv2.inRange(CapturaV_HSV, azulbajo, azulalto)
+        mask2 = cv2.inRange(CapturaV_HSV, verdebajo, verdealto)
+        mask3 = cv2.inRange(CapturaV_HSV, rojobajo, rojoalto)
+        mask4 = cv2.inRange(CapturaV_HSV, blancobajo, blancoalto)
+
+        # Bitwise (# Bit a bit) and mask and original image
+        Azul = cv2.bitwise_and(CapturaV, CapturaV, mask=mask1)
+        Verde = cv2.bitwise_and(CapturaV, CapturaV, mask=mask2)
+        Rojo = cv2.bitwise_and(CapturaV, CapturaV, mask=mask3)
+        Blanco = cv2.bitwise_and(CapturaV, CapturaV, mask=mask4)
+
+        # cv2.imshow('Azul', Azul)
+        # cv2.imshow('Verde', Verde)
+        cv2.imshow('Rojo', Rojo)
+        # cv2.imshow('Blanco', Blanco)
+        cv2.imshow('Video de Practica', CapturaV)
+        # Para video preguardado
+        # if cv2.waitKey(350) & 0xFF == ord('n'):
+        #     break
+        # Para video Streeming
+        if cv2.waitKey(1) & 0xFF == ord('n'):
+            break
+
+cap.release()
+cv2.destroyAllWindows()
+
+'''
+Encontrar Colores de BGR a HSV 
+sad = np.uint8([[[200, 0, 0]]])
+azulbajo = np.array(cv2.cvtColor(bl, cv2.COLOR_BGR2HSV))
+print(sad)
+
+Solo para visualizar el valor
+Por alguna razón no puedo usar "bl"
+Ya que se imprime como [[[120 255 200]]] 
+Y no así -> [120 255 200]
+
+https://docs.opencv.org/3.1.0/df/d9d/tutorial_py_colorspaces.html
+https://www.desarrollo-web-br-bd.com/es/python/identificar-el-rango-de-un-color-en-hsv-usando-opencv/825063937/
+https://www.peko-step.com/es/tool/hsvrgb.html
+'''
